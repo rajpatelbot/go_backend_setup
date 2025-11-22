@@ -22,13 +22,17 @@ migrate-create:
 migrate-diff:
 	@CGO_ENABLED=0 ATLAS_DEV_URL="$(DB_URL)" atlas migrate diff $(name) --env gorm
 
-# ⬆️ Run all up migrations
-migrate-up:
-	@migrate -path $(MIGRATIONS_DIR) -database "$(DB_URL)" up
+# 🆙 Apply all migrations
+migrate-apply:
+	@CGO_ENABLED=0 ATLAS_DEV_URL="$(DB_URL)" atlas migrate apply --env gorm
 
-# ⬇️ Roll back the last migration
-migrate-down:
-	@migrate -path $(MIGRATIONS_DIR) -database "$(DB_URL)" down 1
+# # ⬆️ Run all up migrations
+# migrate-up:
+# 	@migrate -path $(MIGRATIONS_DIR) -database "$(DB_URL)" up
+
+# # ⬇️ Roll back the last migration
+# migrate-down:
+# 	@migrate -path $(MIGRATIONS_DIR) -database "$(DB_URL)" down 1
 
 # Run migrations inside Docker container
 docker-migrate-diff:
