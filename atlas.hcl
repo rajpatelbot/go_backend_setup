@@ -1,27 +1,36 @@
+locals {
+  db_user     = getenv("USER")
+  db_password = getenv("PASSWORD")
+  db_host     = getenv("HOST")
+  db_port     = getenv("DB_PORT")
+  db_name     = getenv("DB_NAME")
+  ssl_mode    = getenv("SSL_MODE")
+
+  db_url = "postgres://${local.db_user}:${local.db_password}@${local.db_host}:${local.db_port}/${local.db_name}?sslmode=${local.ssl_mode}&search_path=public"
+}
+
 data "external_schema" "gorm" {
   program = [
     "go",
     "run",
     "-mod=mod",
-    "ariga.io/atlas-provider-gorm",
-    "load",
-    "--dialect", "postgres",
-    "--path", "./models"
+    "cmd/loadmodels/main.go"
   ]
 }
 
 env "gorm" {
   src = data.external_schema.gorm.url
-  dev = "postgres://${env.USER}:${env.PASSWORD}@${env.HOST}:${env.DB_PORT}/${env.DB_NAME}?sslmode=${env.SSL_MODE}"
-  
+  url = local.db_url
+  dev = "docker://postgres/latest"
+
   migration {
-    dir = "file://migrations"
-    format = golang-migrate
+    dir    = "file://migrations"
+    format = atlas
   }
 
   format {
     migrate {
-      diff = "{{ sql . }}"
+      diff = "{{ sql . \" \" }}"
     }
   }
 }

@@ -29,3 +29,10 @@ migrate-up:
 # ⬇️ Roll back the last migration
 migrate-down:
 	@migrate -path $(MIGRATIONS_DIR) -database "$(DB_URL)" down 1
+
+# Run migrations inside Docker container
+docker-migrate-diff:
+	docker compose exec app atlas migrate diff $(name) --env gorm
+
+docker-migrate-apply:
+	docker compose exec app atlas migrate apply --env gorm
