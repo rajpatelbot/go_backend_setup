@@ -54,26 +54,9 @@ The project uses the following major dependencies:
      ```powershell
      copy .env.example .env
      ```
-   - Update the `.env` file with your PostgreSQL credentials and other configurations:
-     ```env
-     PORT=8080
-     GIN_MODE=debug
+   - Update the `.env` file based on your congigurations
 
-     # Database Configuration
-     DB_HOST=localhost
-     DB_PORT=5432
-     DB_NAME=your_database_name
-     DB_USER=your_username
-     DB_PASSWORD=your_password
-     SSL_MODE=disable
-     ```
-
-4. **Create the database**
-   ```sql
-   createdb your_database_name
-   ```
-
-5. **Run database migrations**
+4. **Run database migrations**
    ```powershell
    make migrate-up
    ```
@@ -83,26 +66,7 @@ The project uses the following major dependencies:
 - `make build` - Build the Go binary
 - `make run` - Run the server
 - `make migrate-create name=migration_name` - Create a new migration file
-- `make migrate-up` - Run all pending migrations
-- `make migrate-down` - Rollback the last migration
-
-## 🏗️ Project Structure
-
-```
-.
-├── cmd/
-│   └── server/
-│       └── main.go       # Application entry point
-├── config/
-│   └── env.go            # Environment configuration
-├── database/
-│   └── postgres.go       # Database connection
-├── migrations/           # Database migration files
-├── models/
-│   └── user.go          # Data models
-└── utils/
-    └── dsn.go           # Database connection string utilities
-```
+- `make migrate-apply` - Apply all the migrations with actual database
 
 ## 🔄 Development Workflow
 
@@ -120,47 +84,12 @@ The project uses the following major dependencies:
 
 4. Apply the migration:
    ```powershell
-   make migrate-up
+   make migrate-apply
    ```
 
 5. Start the server:
    ```powershell
    make run
-   ```
-
-### 📝 Migration Workflow Example
-
-Let's say you want to add a new field to your User model:
-
-1. Update the model in `models/user.go`:
-   ```go
-   type User struct {
-       ID        uint      `gorm:"primarykey"`
-       Name      string    `gorm:"size:255;not null"`
-       Email     string    `gorm:"size:255;not null;unique"`
-       Age       int       `gorm:"not null"` // New field
-       CreatedAt time.Time
-       UpdatedAt time.Time
-   }
-   ```
-
-2. Generate the migration:
-   ```powershell
-   make migrate-diff name=add_age_to_users
-   ```
-
-3. Atlas will generate a migration like:
-   ```sql
-   -- migrate:up
-   ALTER TABLE users ADD COLUMN age integer NOT NULL;
-   
-   -- migrate:down
-   ALTER TABLE users DROP COLUMN age;
-   ```
-
-4. Apply the migration:
-   ```powershell
-   make migrate-up
    ```
 
 ## 📝 Additional Notes
